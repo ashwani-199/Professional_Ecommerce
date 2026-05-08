@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} - American Owl{% endblock %}
+
+{% block content %}
+<style>
+.thumb-active { border-color: #3b82f6 !important; ring: 2px solid #3b82f6; }
+.thumb-item { cursor: pointer; transition: all 0.2s; }
+.thumb-item:hover { border-color: #3b82f6; }
+.zoom-container { overflow: hidden; cursor: crosshair; }
+.zoom-container img { transition: transform 0.3s ease; }
+.zoom-container:hover img { transform: scale(1.8); }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.size-btn { transition: all 0.2s; }
+.size-btn.selected { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+.tab-btn.active { color: #3b82f6; border-color: #3b82f6; }
+.star-rating input { display: none; }
+.star-rating label { cursor: pointer; transition: color 0.2s; }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-3 rounded-xl border border-gray-100">
+        <a href="{% url 'store:home' %}" class="hover:text-primary transition font-medium">Home</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href="{% url 'store:product_list' %}" class="hover:text-primary transition font-medium">Products</a>
+        {% if product.category %}
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href="{% url 'store:category_products' slug=product.category.slug %}" class="hover:text-primary transition font-medium">{{ product.category.name }}</a>
+        {% endif %}
+    </nav>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+            
+            <!-- LEFT: Image Gallery -->
+            <div class="lg:col-span-5 border-r border-gray-100">
+                <div class="flex flex-col md:flex-row gap-4 p-6">
+                    <div class="flex md:flex-col gap-3 order-2 md:order-1 overflow-x-auto md:overflow-y-auto md:h-[500px] scrollbar-hide">
+                        {% if product.images.exists %}
+                            {% for img in product.images.all %}
+                            <button onclick="changeMainImage('{{ img.image.url }}', this)" 
+                                    class="thumb-item flex-shrink-0 w-16 h-16 md:w-14 md:h-14 rounded-lg border-2 border-gray-200 overflow-hidden {% if forloop.first %}thumb-active border-primary{% endif %}">
+                                <img src="{{ img.image.url }}" class="w-full h-full object-cover" alt="{{ img.alt_text|default:product.title }}">
+                            </button>
+                            {% endfor %}
+                        {% else %}
+                            <div class="w-16 h-16 md:w-14 md:h-14 rounded-lg border-2 border-gray-200 bg-gray-50 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex-1 order-1 md:order-2">
+                        <div class="zoom-container relative rounded-xl border border-gray-100 bg-gray-50 aspect-square flex items-center justify-center" id="main-image-container">
+                            {% if product.images.exists %}
+                            <img id="main-image" 
+                                 src="{{ product.images.first.image.url }}" 
+                                 alt="{{ product.title }}"
+                                 class="w-full h-full object-contain p-4"
+                                 onmouseenter="enableZoom(this)" 
+                                 onmouseleave="disableZoom(this)"
+                                 onmousemove="handleZoom(event, this)">
+                            {% else %}
+                            <svg class="w-32 h-32 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            {% endif %}
+                            
+                            {% if product.discount_percent > 0 %}
+                            <div class="absolute top-3 left-3 bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+                                -{{ product.discount_percent }}%
+                            </div>
+                            {% endif %}
+                            
+                            <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg text-xs text-gray-500 flex items-center gap-1.5 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                                Hover to zoom
+                            </div>
+                            
+                            {% if product.images.count > 1 %}
+                            <div class="absolute top-3 right-3 bg-gray-900/70 backdrop-blur text-white px-2.5 py-1 rounded-lg text-xs font-medium">
+                                <span id="image-counter">1</span> / {{ product.images.count }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if product.images.count > 1 %}
+                        <div class="flex items-center justify-between mt-3 md:hidden">
+                            <button onclick="prevImage()" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <div class="flex gap-1.5">
+                                {% for img in product.images.all %}
+                                <div class="w-2 h-2 rounded-full bg-gray-300 {% if forloop.first %}bg-primary{% endif %}"></div>
+                                {% endfor %}
+                            </div>
+                            <button onclick="nextImage()" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Product Details -->
+            <div class="lg:col-span-7 p-6 lg:p-8">
+                <div class="mb-4">
+                    {% if product.category %}
+                    <span class="text-xs font-semibold text-primary uppercase tracking-wider bg-blue-50 px-2.5 py-1 rounded-md">{{ product.category.name }}</span>
+                    {% endif %}
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mt-3 leading-tight">{{ product.title }}</h1>
+                </div>
+
+                <!-- Rating Row -->
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex items-center gap-1">
+                        {% if product.average_rating %}
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.average_rating %}
+                                <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                {% else %}
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="text-sm font-semibold text-gray-700 ml-1">{{ product.average_rating }}</span>
+                            <span class="text-sm text-gray-400">({{ product.review_count }} reviews)</span>
+                        {% else %}
+                            <div class="flex items-center gap-1">
+                                {% for i in "12345" %}
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                {% endfor %}
+                            </div>
+                            <span class="text-sm text-gray-400">No reviews yet</span>
+                        {% endif %}
+                    </div>
+                    <span class="text-sm text-gray-500 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                        Free delivery
+                    </span>
+                    {% if product.in_stock %}
+                    <span class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        In Stock
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1.5 rounded-full text-sm font-semibold">
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                        Out of Stock
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Price Section -->
+                <div class="mb-6 pb-6 border-b border-gray-100">
+                    <div class="flex items-baseline gap-3">
+                        {% if product.discount_percent > 0 %}
+                            <span class="text-4xl font-bold text-gray-900">₹{{ product.sale_price }}</span>
+                            <span class="text-xl text-gray-400 line-through">₹{{ product.price }}</span>
+                            <span class="inline-flex items-center bg-red-50 text-red-600 px-2.5 py-0.5 rounded-lg text-sm font-bold">-{{ product.discount_percent }}%</span>
+                        {% else %}
+                            <span class="text-4xl font-bold text-gray-900">₹{{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-green-600 font-medium mt-1">Inclusive of all taxes + Free Shipping</p>
+                </div>
+
+                <!-- Product Highlights -->
+                {% if product.highlights_list %}
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Highlights</h3>
+                    <ul class="space-y-2">
+                        {% for hl in product.highlights_list %}
+                        <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            {{ hl }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Size Selector -->
+                {% if product.sizes.exists %}
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Select Size</h3>
+                    <div class="flex flex-wrap gap-3" id="size-selector">
+                        {% for size in product.sizes.all %}
+                        <button type="button" onclick="selectSize(this, '{{ size.id }}')" 
+                                class="size-btn px-5 py-2.5 rounded-xl border-2 border-gray-200 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition {% if forloop.first %}selected{% endif %}">
+                            {{ size.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Highlights Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-gray-50 rounded-xl p-3.5 text-center">
+                        <svg class="w-5 h-5 text-primary mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                        <p class="text-xs font-semibold text-gray-700">Free Shipping</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3.5 text-center">
+                        <svg class="w-5 h-5 text-green-600 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <p class="text-xs font-semibold text-gray-700">30-Day Return</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3.5 text-center">
+                        <svg class="w-5 h-5 text-purple-600 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <p class="text-xs font-semibold text-gray-700">1 Yr Warranty</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3.5 text-center">
+                        <svg class="w-5 h-5 text-orange-500 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <p class="text-xs font-semibold text-gray-700">Fast Delivery</p>
+                    </div>
+                </div>
+
+                <!-- Add to Cart -->
+                {% if product.in_stock %}
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'store:add_to_cart' product_id=product.id %}" method="post" class="flex flex-col sm:flex-row gap-3">
+                        {% csrf_token %}
+                        {% if product.sizes.exists %}
+                        <input type="hidden" name="size" value="{% if product.sizes.first %}{{ product.sizes.first.id }}{% endif %}">
+                        {% endif %}
+                        <div class="flex items-center border-2 border-gray-200 rounded-xl bg-white">
+                            <button type="button" onclick="updateQty(-1)" class="px-5 py-3.5 hover:bg-gray-50 transition text-gray-600 font-bold text-lg rounded-l-xl">-</button>
+                            <input type="number" name="quantity" id="qty" value="1" min="1" max="{{ product.inventory }}" readonly 
+                                   class="w-16 text-center border-none focus:ring-0 font-bold text-lg bg-transparent">
+                            <button type="button" onclick="updateQty(1)" class="px-5 py-3.5 hover:bg-gray-50 transition text-gray-600 font-bold text-lg rounded-r-xl">+</button>
+                        </div>
+                        <button type="submit" class="flex-1 bg-primary text-white px-8 py-3.5 rounded-xl hover:bg-blue-600 transition font-bold text-lg shadow-lg shadow-primary/20">
+                            <svg class="w-5 h-5 inline -mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            Add to Cart
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="flex-1 bg-primary text-white text-center px-8 py-3.5 rounded-xl hover:bg-blue-600 transition font-bold text-lg shadow-lg shadow-primary/20">
+                            Login to Add to Cart
+                        </a>
+                        <a href="{% url 'accounts:register' %}" class="flex-1 bg-orange-500 text-white text-center px-8 py-3.5 rounded-xl hover:bg-orange-600 transition font-bold text-lg shadow-lg shadow-orange-500/20">
+                            Register
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="bg-gray-50 border-2 border-gray-200 text-gray-500 px-6 py-4 rounded-xl text-center font-semibold">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    This product is currently unavailable
+                </div>
+                {% endif %}
+
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                    <div class="flex items-center gap-3 text-sm text-gray-500">
+                        <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Deliver to your location. Estimated delivery: <span class="font-semibold text-gray-700">3-5 business days</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Section: Details | Additional Info | Reviews -->
+    <div class="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="border-b border-gray-100">
+            <div class="flex">
+                <button onclick="switchTab('details', this)" class="tab-btn active px-6 py-4 text-sm font-semibold text-primary border-b-2 border-primary transition">Product Details</button>
+                {% if product.additional_info %}
+                <button onclick="switchTab('additional', this)" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition">Additional Info</button>
+                {% endif %}
+                <button onclick="switchTab('reviews', this)" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition">Reviews ({{ product.review_count }})</button>
+            </div>
+        </div>
+
+        <!-- Tab: Product Details -->
+        <div id="tab-details" class="tab-content p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Description</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed">{{ product.description|default:"No description available."|linebreaks }}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Specifications</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between py-2.5 border-b border-gray-50">
+                            <span class="text-sm text-gray-500">Product Name</span>
+                            <span class="text-sm font-medium text-gray-900">{{ product.title }}</span>
+                        </div>
+                        <div class="flex justify-between py-2.5 border-b border-gray-50">
+                            <span class="text-sm text-gray-500">Category</span>
+                            <span class="text-sm font-medium text-gray-900">{{ product.category.name|default:"N/A" }}</span>
+                        </div>
+                        <div class="flex justify-between py-2.5 border-b border-gray-50">
+                            <span class="text-sm text-gray-500">Price</span>
+                            {% if product.discount_percent > 0 %}
+                                <span class="text-sm font-medium text-gray-900">₹{{ product.sale_price }} <span class="text-gray-400 line-through">₹{{ product.price }}</span></span>
+                            {% else %}
+                                <span class="text-sm font-medium text-gray-900">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="flex justify-between py-2.5 border-b border-gray-50">
+                            <span class="text-sm text-gray-500">Availability</span>
+                            {% if product.in_stock %}
+                                <span class="text-sm font-medium text-green-600">In Stock ({{ product.inventory }})</span>
+                            {% else %}
+                                <span class="text-sm font-medium text-red-600">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        {% if product.sizes.exists %}
+                        <div class="flex justify-between py-2.5 border-b border-gray-50">
+                            <span class="text-sm text-gray-500">Available Sizes</span>
+                            <span class="text-sm font-medium text-gray-900">{{ product.sizes.all|join:", " }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Additional Info -->
+        {% if product.additional_info %}
+        <div id="tab-additional" class="tab-content p-6 hidden">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Additional Information</h4>
+            <div class="prose prose-sm max-w-none text-gray-600">
+                {{ product.additional_info|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Tab: Reviews -->
+        <div id="tab-reviews" class="tab-content p-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Review Summary -->
+                <div class="text-center p-6 bg-gray-50 rounded-2xl">
+                    <p class="text-5xl font-extrabold text-gray-900">{{ product.average_rating|default:"--" }}</p>
+                    <div class="flex items-center justify-center gap-1 mt-2">
+                        {% if product.average_rating %}
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.average_rating %}
+                                <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                {% else %}
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% for i in "12345" %}
+                            <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">{{ product.review_count }} review{{ product.review_count|pluralize }}</p>
+                </div>
+
+                <!-- Review Form -->
+                <div class="lg:col-span-2">
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'store:add_review' product_id=product.id %}" class="bg-gray-50 rounded-2xl p-6 mb-6">
+                        {% csrf_token %}
+                        <h4 class="font-semibold text-gray-900 mb-4">Write a Review</h4>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                            <div class="star-rating flex flex-row-reverse justify-end gap-1" onmouseleave="resetStars()">
+                                {% for i in "54321" %}
+                                <input type="radio" name="rating" value="{{ forloop.revcounter }}" id="star{{ forloop.revcounter }}" {% if user_review and user_review.rating == forloop.revcounter %}checked{% endif %} required>
+                                <label for="star{{ forloop.revcounter }}" onmouseenter="highlightStars({{ forloop.revcounter }})" onclick="setRating({{ forloop.revcounter }})">
+                                    <svg class="w-7 h-7 text-gray-300 hover:text-yellow-400 transition" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="rating_value" id="rating-value" value="{% if user_review %}{{ user_review.rating }}{% endif %}">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Review Title</label>
+                            <input type="text" name="title" value="{{ user_review.title|default:'' }}" placeholder="Great product!" 
+                                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary transition">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+                            <textarea name="comment" rows="3" placeholder="Share your experience with this product..." 
+                                      class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary transition">{{ user_review.comment|default:'' }}</textarea>
+                        </div>
+                        <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-xl hover:bg-blue-600 transition font-semibold text-sm">
+                            {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="bg-gray-50 rounded-2xl p-6 mb-6 text-center">
+                        <p class="text-gray-500 mb-3">Please <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="text-primary font-semibold hover:text-blue-700">login</a> to leave a review.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Review List -->
+                    <div class="space-y-4">
+                        {% for review in product.reviews.all %}
+                        <div class="bg-white border border-gray-100 rounded-xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-sm">{{ review.user.username|first|upper }}</div>
+                                    <div>
+                                        <p class="font-medium text-gray-900 text-sm">{{ review.user.username }}</p>
+                                        <p class="text-xs text-gray-400">{{ review.created_at|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-0.5">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        {% else %}
+                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if review.title %}
+                            <h5 class="font-semibold text-gray-900 text-sm mb-1">{{ review.title }}</h5>
+                            {% endif %}
+                            {% if review.comment %}
+                            <p class="text-sm text-gray-600">{{ review.comment }}</p>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-8 text-gray-500">
+                            <p>No reviews yet. Be the first to review this product!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Products -->
+    {% if related_products %}
+    <div class="mt-8">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    <h2 class="text-lg font-bold text-gray-900">Similar Products</h2>
+                </div>
+                <a href="{% url 'store:product_list' %}" class="text-sm text-primary hover:text-blue-700 font-medium">View All</a>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {% for item in related_products %}
+                    <a href="{% url 'store:product_detail' slug=item.slug %}" class="group block">
+                        <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:shadow-lg group-hover:border-primary/20 transition duration-300">
+                            <div class="aspect-square bg-gray-50 relative">
+                                {% if item.images.exists %}
+                                    <img src="{{ item.images.first.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="{{ item.title }}">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                {% endif %}
+                                {% if item.discount_percent > 0 %}
+                                <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-md font-bold">-{{ item.discount_percent }}%</div>
+                                {% endif %}
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-medium text-gray-900 mb-1 line-clamp-2 text-sm group-hover:text-primary transition">{{ item.title }}</h3>
+                                <div class="flex items-center gap-1 mb-1">
+                                    {% if item.average_rating %}
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= item.average_rating %}
+                                            <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="text-[10px] text-gray-400 ml-1">({{ item.review_count }})</span>
+                                    {% endif %}
+                                </div>
+                                {% if item.discount_percent > 0 %}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-lg font-bold text-gray-900">₹{{ item.sale_price }}</span>
+                                    <span class="text-xs text-gray-400 line-through">₹{{ item.price }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-lg font-bold text-gray-900">₹{{ item.price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentImageIndex = 0;
+const imageUrls = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const thumbButtons = document.querySelectorAll('.thumb-item');
+    thumbButtons.forEach((btn, index) => {
+        const img = btn.querySelector('img');
+        if (img) imageUrls.push(img.src);
+    });
+});
+
+function changeMainImage(url, btn) {
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) { mainImg.src = url; mainImg.style.transform = 'scale(1)'; }
+    document.querySelectorAll('.thumb-item').forEach(t => {
+        t.classList.remove('thumb-active', 'border-primary');
+        t.classList.add('border-gray-200');
+    });
+    btn.classList.add('thumb-active', 'border-primary');
+    btn.classList.remove('border-gray-200');
+    const index = imageUrls.indexOf(url);
+    if (index !== -1) { currentImageIndex = index; updateCounter(); }
+}
+
+function updateQty(delta) {
+    const qty = document.getElementById('qty');
+    let val = parseInt(qty.value) + delta;
+    const max = parseInt(qty.getAttribute('max'));
+    if (val < 1) val = 1; if (val > max) val = max;
+    qty.value = val;
+}
+
+function enableZoom(img) { img.parentElement.classList.add('zoom-container'); }
+function disableZoom(img) { img.style.transform = 'scale(1)'; img.style.transformOrigin = 'center center'; }
+function handleZoom(e, img) {
+    const container = img.parentElement;
+    const rect = container.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    img.style.transformOrigin = x + '% ' + y + '%';
+    img.style.transform = 'scale(1.8)';
+}
+function updateCounter() {
+    const counter = document.getElementById('image-counter');
+    if (counter) counter.textContent = currentImageIndex + 1;
+}
+function prevImage() {
+    if (imageUrls.length === 0) return;
+    currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) { mainImg.src = imageUrls[currentImageIndex]; updateCounter(); }
+    updateThumbnails();
+}
+function nextImage() {
+    if (imageUrls.length === 0) return;
+    currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) { mainImg.src = imageUrls[currentImageIndex]; updateCounter(); }
+    updateThumbnails();
+}
+function updateThumbnails() {
+    document.querySelectorAll('.thumb-item').forEach((btn, index) => {
+        btn.classList.toggle('thumb-active', index === currentImageIndex);
+        btn.classList.toggle('border-primary', index === currentImageIndex);
+        btn.classList.toggle('border-gray-200', index !== currentImageIndex);
+    });
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+});
+
+// Size selector
+function selectSize(btn, sizeId) {
+    document.querySelectorAll('.size-btn').forEach(b => {
+        b.classList.remove('selected', 'border-primary', 'bg-blue-50', 'text-blue-600');
+        b.classList.add('border-gray-200', 'text-gray-700');
+    });
+    btn.classList.add('selected', 'border-primary', 'bg-blue-50', 'text-blue-600');
+    btn.classList.remove('border-gray-200', 'text-gray-700');
+    document.querySelector('input[name="size"]').value = sizeId;
+}
+
+// Tabs
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(t => {
+        t.classList.remove('active', 'text-primary', 'border-primary');
+        t.classList.add('text-gray-500', 'border-transparent');
+    });
+    btn.classList.add('active', 'text-primary', 'border-primary');
+    btn.classList.remove('text-gray-500', 'border-transparent');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+}
+
+// Star rating
+function highlightStars(val) {
+    const labels = document.querySelectorAll('.star-rating label');
+    labels.forEach((label, i) => {
+        const star = label.querySelector('svg');
+        if (i < val) star.classList.remove('text-gray-300'); else star.classList.add('text-gray-300');
+        star.classList.toggle('text-yellow-400', i < val);
+    });
+}
+function setRating(val) { document.getElementById('rating-value').value = val; }
+function resetStars() {
+    const val = document.getElementById('rating-value').value;
+    if (val) highlightStars(parseInt(val));
+    else document.querySelectorAll('.star-rating svg').forEach(s => { s.classList.add('text-gray-300'); s.classList.remove('text-yellow-400'); });
+}
+</script>
+{% endblock %}
