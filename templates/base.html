@@ -4,7 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}American Owl - Premium E-Commerce{% endblock %}</title>
+
+    <!-- Meta Description -->
+    <meta name="description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+
+    <!-- Meta Keywords -->
+    <meta name="keywords" content="{% block meta_keywords %}American Owl, premium ecommerce, online shopping, quality products, american marketplace{% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}{{ SITE_URL }}{{ request.path }}{% endblock %}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="{{ SITE_NAME }}">
+    <meta property="og:title" content="{% block og_title %}American Owl - Premium E-Commerce{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+    <meta property="og:url" content="{{ SITE_URL }}{{ request.path }}">
+    <meta property="og:image" content="{% block og_image %}{{ SITE_URL }}{% static 'images/og-default.svg' %}{% endblock %}">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
+    <meta name="twitter:site" content="@americanowl">
+    <meta name="twitter:title" content="{% block twitter_title %}American Owl - Premium E-Commerce{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ SITE_URL }}{% static 'images/og-default.svg' %}{% endblock %}">
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='18' cy='18' r='17' fill='%231e293b'/%3E%3Cellipse cx='18' cy='13' rx='8' ry='7' fill='%233b82f6'/%3E%3Cpath d='M11 10 L9 5 L13 8.5Z' fill='%233b82f6' opacity='0.8'/%3E%3Cpath d='M25 10 L27 5 L23 8.5Z' fill='%233b82f6' opacity='0.8'/%3E%3Ccircle cx='14.5' cy='13' r='3.5' fill='%23fff'/%3E%3Ccircle cx='21.5' cy='13' r='3.5' fill='%23fff'/%3E%3Ccircle cx='14.5' cy='13' r='2' fill='%231e293b'/%3E%3Ccircle cx='21.5' cy='13' r='2' fill='%231e293b'/%3E%3Ccircle cx='13.8' cy='12.3' r='0.7' fill='%23fff'/%3E%3Ccircle cx='20.8' cy='12.3' r='0.7' fill='%23fff'/%3E%3Cpath d='M16.5 15.5 L18 18 L19.5 15.5Z' fill='%23f59e0b'/%3E%3Cpath d='M9 17 C7 21, 9 26, 12 25 C10 23, 10 20, 9 17Z' fill='%233b82f6' opacity='0.7'/%3E%3Cpath d='M27 17 C29 21, 27 26, 24 25 C26 23, 26 20, 27 17Z' fill='%233b82f6' opacity='0.7'/%3E%3C/svg%3E">
     <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='18' cy='18' r='17' fill='%231e293b'/%3E%3Cellipse cx='18' cy='13' rx='8' ry='7' fill='%233b82f6'/%3E%3Cpath d='M11 10 L9 5 L13 8.5Z' fill='%233b82f6' opacity='0.8'/%3E%3Cpath d='M25 10 L27 5 L23 8.5Z' fill='%233b82f6' opacity='0.8'/%3E%3Ccircle cx='14.5' cy='13' r='3.5' fill='%23fff'/%3E%3Ccircle cx='21.5' cy='13' r='3.5' fill='%23fff'/%3E%3Ccircle cx='14.5' cy='13' r='2' fill='%231e293b'/%3E%3Ccircle cx='21.5' cy='13' r='2' fill='%231e293b'/%3E%3Ccircle cx='13.8' cy='12.3' r='0.7' fill='%23fff'/%3E%3Ccircle cx='20.8' cy='12.3' r='0.7' fill='%23fff'/%3E%3Cpath d='M16.5 15.5 L18 18 L19.5 15.5Z' fill='%23f59e0b'/%3E%3Cpath d='M9 17 C7 21, 9 26, 12 25 C10 23, 10 20, 9 17Z' fill='%233b82f6' opacity='0.7'/%3E%3Cpath d='M27 17 C29 21, 27 26, 24 25 C26 23, 26 20, 27 17Z' fill='%233b82f6' opacity='0.7'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,6 +51,52 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
     </style>
+
+    <!-- JSON-LD Organization Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ SITE_NAME }}",
+        "url": "{{ SITE_URL }}",
+        "logo": "{{ SITE_URL }}{% static 'images/og-default.svg' %}",
+        "description": "{{ SITE_DESCRIPTION }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-800-AMERIOWL",
+            "contactType": "customer service",
+            "availableLanguage": "English"
+        },
+        "sameAs": [
+            "https://facebook.com/americanowl",
+            "https://twitter.com/americanowl",
+            "https://instagram.com/americanowl"
+        ]
+    }
+    </script>
+
+    {% block extra_head %}{% endblock %}
+
+    {% if GA_TRACKING_ID %}
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_TRACKING_ID }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ GA_TRACKING_ID }}');
+    </script>
+    {% endif %}
+
+    {% if ADSENSE_CLIENT_ID %}
+    <!-- Google Adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ ADSENSE_CLIENT_ID }}"
+            crossorigin="anonymous"></script>
+    {% endif %}
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
@@ -196,10 +269,28 @@
                     <h4 class="font-semibold mb-4">Quick Links</h4>
                     <ul class="space-y-2 text-gray-400 text-sm">
                         <li><a href="{% url 'store:product_list' %}" class="hover:text-white transition">All Products</a></li>
-                        <li><a href="#" class="hover:text-white transition">New Arrivals</a></li>
+                        <li><a href="{% url 'store:about' %}" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="{% url 'store:blog' %}" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="{% url 'store:customers' %}" class="hover:text-white transition">Testimonials</a></li>
                     </ul>
                 </div>
                 <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="{% url 'store:contact' %}" class="hover:text-white transition">Contact Us</a></li>
+                        <li><a href="{% url 'store:faqs' %}" class="hover:text-white transition">FAQs</a></li>
+                        <li><a href="{% url 'store:shipping' %}" class="hover:text-white transition">Shipping Policy</a></li>
+                        <li><a href="{% url 'store:refund' %}" class="hover:text-white transition">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="{% url 'store:privacy' %}" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="{% url 'store:terms' %}" class="hover:text-white transition">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <!-- <div>
                     <h4 class="font-semibold mb-4">Account</h4>
                     <ul class="space-y-2 text-gray-400 text-sm">
                         {% if user.is_authenticated %}
@@ -210,12 +301,7 @@
                             <li><a href="{% url 'accounts:register' %}" class="hover:text-white transition">Register</a></li>
                         {% endif %}
                     </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Contact</h4>
-                    <p class="text-gray-400 text-sm">support@americanowl.com</p>
-                    <p class="text-gray-400 text-sm">1-800-AMERIOWL</p>
-                </div>
+                </div> -->
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
                 &copy; 2026 American Owl. All rights reserved.

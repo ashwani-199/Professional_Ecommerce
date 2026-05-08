@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Happy Customers - American Owl{% endblock %}
+{% block meta_description %}Hear from our happy customers. Read authentic reviews and testimonials from thousands of satisfied American Owl shoppers.{% endblock %}
+{% block meta_keywords %}customer reviews, testimonials, American Owl reviews, happy customers{% endblock %}
+{% block og_title %}Happy Customers - American Owl{% endblock %}
+{% block og_description %}Hear from our happy customers. Read authentic reviews from thousands of satisfied shoppers.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 bg-blue-50 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">Testimonials</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">What Our Customers Say</h1>
+        <p class="text-lg text-gray-500 max-w-2xl mx-auto">Join 12,000+ happy customers who trust American Owl for premium quality and unbeatable value.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">Absolutely love my purchase! The quality exceeded my expectations and shipping was incredibly fast. Will definitely be ordering again.</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">SM</div>
+                <div><p class="font-semibold text-gray-900 text-sm">Sarah M.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">Best online shopping experience I've had. The customer service team went above and beyond to help me with my order. Highly recommend!</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">JD</div>
+                <div><p class="font-semibold text-gray-900 text-sm">James D.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">The product quality is outstanding. I've been a customer for months and every purchase has been consistently excellent. Five stars all the way!</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">MK</div>
+                <div><p class="font-semibold text-gray-900 text-sm">Michael K.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">Free delivery and amazing prices! I saved so much compared to other stores. The product arrived well-packaged and in perfect condition.</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm">ER</div>
+                <div><p class="font-semibold text-gray-900 text-sm">Emily R.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">I was hesitant at first but the 30-day return policy gave me confidence. The product was perfect and the entire process was smooth from order to delivery.</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold text-sm">DW</div>
+                <div><p class="font-semibold text-gray-900 text-sm">David W.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-1 mb-3">
+                {% for i in "12345" %}<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">Premium quality at reasonable prices. This is my go-to store now. The variety is great and everything I've ordered has been top-notch.</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-sm">AL</div>
+                <div><p class="font-semibold text-gray-900 text-sm">Amanda L.</p><p class="text-xs text-gray-400">Verified Buyer</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-gradient-to-r from-primary to-blue-700 rounded-3xl p-8 md:p-12 text-center text-white">
+        <h2 class="text-2xl md:text-3xl font-bold mb-3">Join 12,000+ Happy Customers</h2>
+        <p class="text-blue-200 mb-6 max-w-lg mx-auto">Experience the American Owl difference. Premium products, unbeatable prices, and exceptional service.</p>
+        <a href="{% url 'store:product_list' %}" class="inline-flex items-center gap-2 bg-white text-primary px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">Start Shopping <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+    </div>
+</div>
+{% endblock %}

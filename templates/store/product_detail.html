@@ -3,6 +3,82 @@
 
 {% block title %}{{ product.title }} - American Owl{% endblock %}
 
+{% block meta_description %}{{ product.description|default:product.title|truncatewords:30 }}{% endblock %}
+
+{% block meta_keywords %}{{ product.title }}, {{ product.category.name|default:"product" }}, American Owl, buy {{ product.title }}, {{ product.title }} price{% endblock %}
+
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ product.title }} - American Owl{% endblock %}
+{% block og_description %}{{ product.description|default:product.title|truncatewords:30 }}{% endblock %}
+{% block og_image %}{% if product.images.exists %}{{ SITE_URL }}{{ product.images.first.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ product.title }} - American Owl{% endblock %}
+{% block twitter_description %}{{ product.description|default:product.title|truncatewords:30 }}{% endblock %}
+{% block twitter_image %}{% if product.images.exists %}{{ SITE_URL }}{{ product.images.first.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ product.title|escapejs }}",
+    "description": "{{ product.description|default:product.title|truncatewords:40|escapejs }}",
+    "image": "{% if product.images.exists %}{{ SITE_URL }}{{ product.images.first.image.url }}{% endif %}",
+    "sku": "{{ product.id }}",
+    "mpn": "AO-{{ product.id }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "American Owl"
+    },
+    {% if product.average_rating %}
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ product.average_rating }}",
+        "reviewCount": "{{ product.review_count }}"
+    },
+    {% endif %}
+    "offers": {
+        "@type": "Offer",
+        "url": "{{ SITE_URL }}{% url 'store:product_detail' slug=product.slug %}",
+        "priceCurrency": "INR",
+        "price": "{% if product.discount_percent > 0 %}{{ product.sale_price }}{% else %}{{ product.price }}{% endif %}",
+        "priceValidUntil": "2027-12-31",
+        "availability": "{% if product.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "itemCondition": "https://schema.org/NewCondition"
+    }
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ SITE_URL }}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Products",
+            "item": "{{ SITE_URL }}{% url 'store:product_list' %}"
+        }
+        {% if product.category %}
+        ,{
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ product.category.name }}",
+            "item": "{{ SITE_URL }}{% url 'store:category_products' slug=product.category.slug %}"
+        }
+        {% endif %}
+    ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <style>
 .thumb-active { border-color: #3b82f6 !important; ring: 2px solid #3b82f6; }

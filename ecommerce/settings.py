@@ -6,6 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production')
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+# DEBUG = False
+
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
@@ -48,6 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'store.context_processors.seo_settings',
             ],
         },
     },
@@ -162,3 +165,16 @@ LOGGING = {
 
 LOGS_DIR = BASE_DIR / 'logs'
 LOGS_DIR.mkdir(exist_ok=True)
+
+# ==============================================================================
+# SEO & Analytics Settings
+# ==============================================================================
+GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', '')
+ADSENSE_CLIENT_ID = os.environ.get('ADSENSE_CLIENT_ID', '')
+ADSENSE_SLOT_HOME = os.environ.get('ADSENSE_SLOT_HOME', '')
+ADSENSE_SLOT_LIST = os.environ.get('ADSENSE_SLOT_LIST', '')
+ADSENSE_SLOT_DETAIL = os.environ.get('ADSENSE_SLOT_DETAIL', '')
+
+SITE_NAME = 'American Owl'
+SITE_DESCRIPTION = 'Your trusted American marketplace for quality products at unbeatable prices.'
+SITE_URL = os.environ.get('SITE_URL', 'https://americanowl.com')

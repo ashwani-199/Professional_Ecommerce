@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Avg
+from django.conf import settings
 from .models import Product, Category, Cart, CartItem
+from .forms import ContactForm
 
 
 def custom_404(request, exception):
@@ -12,6 +14,29 @@ def custom_404(request, exception):
 
 def custom_500(request):
     return render(request, '500.html', status=500)
+
+
+def ads_txt(request):
+    client_id = getattr(settings, 'ADSENSE_CLIENT_ID', '')
+    if client_id:
+        return HttpResponse(f"google.com, {client_id}, DIRECT, f08c47fec0942fa0\n", content_type="text/plain")
+    return HttpResponse("", content_type="text/plain")
+
+
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+    ]
+    if settings.DEBUG:
+        lines.append("Disallow: /")
+    else:
+        lines.append("Disallow: /admin/")
+        lines.append("Disallow: /accounts/")
+        lines.append("Disallow: /cart/")
+        lines.append("Disallow: /orders/")
+        lines.append("")
+        lines.append(f"Sitemap: {settings.SITE_URL}/sitemap.xml")
+    return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
 def home(request):
@@ -155,3 +180,48 @@ def add_review(request, product_id):
         )
         messages.success(request, 'Review submitted successfully.')
     return redirect('store:product_detail', slug=product.slug)
+
+
+def about(request):
+    return render(request, 'store/about.html')
+
+
+def blog(request):
+    return render(request, 'store/blog.html')
+
+
+def privacy(request):
+    return render(request, 'store/privacy.html')
+
+
+def terms(request):
+    return render(request, 'store/terms.html')
+
+
+def customers(request):
+    return render(request, 'store/customers.html')
+
+
+def contact(request):
+    form = ContactForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            messages.success(
+                request,
+                'Thank you for your message! We will get back to you within 24 hours.'
+            )
+            return redirect('store:contact')
+        messages.error(request, 'Please correct the errors below.')
+    return render(request, 'store/contact.html', {'form': form})
+
+
+def faqs(request):
+    return render(request, 'store/faqs.html')
+
+
+def shipping(request):
+    return render(request, 'store/shipping.html')
+
+
+def refund(request):
+    return render(request, 'store/refund.html')

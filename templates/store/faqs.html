@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQs - American Owl{% endblock %}
+{% block meta_description %}Find answers to frequently asked questions about American Owl, including orders, shipping, returns, payments, and account management.{% endblock %}
+{% block meta_keywords %}FAQs, frequently asked questions, American Owl help, customer support{% endblock %}
+{% block og_title %}FAQs - American Owl{% endblock %}
+{% block og_description %}Find answers to frequently asked questions about American Owl, including orders, shipping, returns, and payments.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 bg-blue-50 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">Help Center</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Frequently Asked Questions</h1>
+        <p class="text-lg text-gray-500 max-w-2xl mx-auto">Quick answers to the most common questions. Can't find what you're looking for? <a href="{% url 'store:contact' %}" class="text-primary hover:text-blue-700 font-medium">Contact us</a>.</p>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="divide-y divide-gray-100">
+            <div class="p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    Orders & Payments
+                </h2>
+                <div class="space-y-4">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How do I place an order?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Simply browse our products, select your desired item, choose any options (size, quantity), and click "Add to Cart." When you're ready, proceed to checkout, enter your shipping details, and complete payment. That's it!</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>What payment methods do you accept?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">We accept all major credit and debit cards (Visa, MasterCard, American Express, Discover), PayPal, and other secure payment methods. All transactions are encrypted and processed securely.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Can I cancel or modify my order?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">You can cancel or modify your order within 1 hour of placement. After that, your order enters processing and cannot be changed. Contact our support team immediately if you need assistance.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Is my payment information secure?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Absolutely. We use industry-standard SSL encryption to protect your data. Your payment information is never stored on our servers and is processed directly through our secure payment partners.</div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    Shipping & Delivery
+                </h2>
+                <div class="space-y-4">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How long does shipping take?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Standard shipping takes 3-7 business days within the US. Express shipping (2-3 business days) is available at checkout. International shipping times vary by destination.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Do you offer free shipping?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Yes! We offer free standard shipping on all orders within the United States. No minimum purchase required.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Do you ship internationally?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Currently we ship within the United States. International shipping is coming soon. Sign up for our newsletter to be notified when international shipping becomes available.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How can I track my order?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Once your order ships, you'll receive a confirmation email with a tracking number. You can also track your order from your account dashboard under "My Orders."</div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Returns & Refunds
+                </h2>
+                <div class="space-y-4">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>What is your return policy?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">We offer a 30-day return policy from the date of delivery. Items must be unused, in original condition, and in their original packaging. Some exclusions apply.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How long do refunds take?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Once we receive your return, please allow 5-7 business days for inspection and processing. Refunds are issued to your original payment method and may take an additional 3-5 business days to appear.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Who pays for return shipping?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Return shipping is free for defective or incorrect items. For other returns, a small return shipping fee may apply. We'll provide a prepaid return label for your convenience.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Can I exchange an item?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Yes, we offer exchanges for the same item in a different size or color, subject to availability. Contact our support team to initiate an exchange.</div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Account & Support
+                </h2>
+                <div class="space-y-4">
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How do I create an account?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Click the "Register" button at the top of the page. Enter your name, email, and a secure password. Once registered, you can track orders, save addresses, and enjoy faster checkout.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>I forgot my password. What should I do?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Click "Login" and then select "Forgot Password." Enter your email address and we'll send you a link to reset your password securely.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>How do I contact customer support?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">You can reach us via email at support@americanowl.com, by phone at 1-800-AMERIOWL (Mon-Fri, 9am-6pm EST), or through our <a href="{% url 'store:contact' %}" class="text-primary hover:underline">contact form</a>. We typically respond within 24 hours.</div>
+                    </details>
+                    <details class="group">
+                        <summary class="flex items-center justify-between cursor-pointer text-gray-900 font-medium py-3 px-4 bg-gray-50 rounded-xl group-open:bg-primary group-open:text-white transition">
+                            <span>Can I delete my account?</span>
+                            <svg class="w-5 h-5 text-gray-400 group-open:text-white group-open:rotate-180 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 text-gray-600 text-sm leading-relaxed">Yes. Contact our support team and we'll help you delete your account and associated personal data. Please note that order history may be retained for legal and record-keeping purposes.</div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
