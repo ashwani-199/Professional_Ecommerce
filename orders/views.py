@@ -182,6 +182,30 @@ def order_detail(request, order_id):
 
 
 @login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if request.method != 'POST':
+        return redirect('orders:order_detail', order_id=order.id)
+
+    if order.status not in ('pending', 'processing'):
+        messages.error(request, 'This order cannot be canceled.')
+        return redirect('orders:order_detail', order_id=order.id)
+
+    with transaction.atomic():
+        for item in order.items.all():
+            product = item.product
+            if product:
+                product.inventory += item.quantity
+                product.save()
+        order.status = 'canceled'
+        order.save()
+
+    messages.success(request, f'Order #{order.id} has been canceled successfully.')
+    return redirect('orders:order_detail', order_id=order.id)
+
+
+@login_required
 def add_address(request):
     if request.method == 'POST':
         form = AddressForm(request.POST)
