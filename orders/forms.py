@@ -169,6 +169,7 @@ class CheckoutForm(forms.Form):
         ('cash_on_delivery', 'Cash on Delivery'),
         ('credit_card', 'Credit/Debit Card'),
         ('paypal', 'PayPal'),
+        ('razorpay', 'Razorpay'),
     ]
 
     address = forms.ModelChoiceField(

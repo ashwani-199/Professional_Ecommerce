@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.db.models import Avg
 from django.conf import settings
 from .models import Product, Category, Cart, CartItem
@@ -150,14 +150,17 @@ def update_cart_item(request, item_id):
         if cart_item.cart.user == request.user:
             quantity = int(request.POST.get('quantity', 1))
             if quantity > cart_item.product.inventory:
-                return JsonResponse({'error': 'Not enough stock'}, status=400)
+                messages.error(request, 'Not enough stock available.')
+                return redirect('store:cart_detail')
             if quantity <= 0:
                 cart_item.delete()
+                messages.success(request, 'Item removed from cart.')
             else:
                 cart_item.quantity = quantity
                 cart_item.save()
-        return JsonResponse({'success': True})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+                messages.success(request, 'Cart updated.')
+        return redirect('store:cart_detail')
+    return redirect('store:cart_detail')
 
 
 @login_required

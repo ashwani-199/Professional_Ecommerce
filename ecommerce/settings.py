@@ -179,3 +179,9 @@ ADSENSE_SLOT_DETAIL = os.environ.get('ADSENSE_SLOT_DETAIL', '')
 SITE_NAME = 'American Owl'
 SITE_DESCRIPTION = 'Your trusted American marketplace for quality products at unbeatable prices.'
 SITE_URL = os.environ.get('SITE_URL', 'https://americanowl.com')
+
+# ==============================================================================
+# Razorpay Payment Gateway
+# ==============================================================================
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')

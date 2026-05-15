@@ -3,12 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
+from django.conf import settings
+from django.urls import reverse
 from store.models import Cart, CartItem
 from .models import Order, OrderItem, Payment, Address
 from .forms import AddressForm, CheckoutForm
+import razorpay
 import random
 import string
 import re
+import time
+import json
 
 
 def generate_transaction_id():
@@ -51,6 +56,8 @@ def checkout(request):
             if payment_method in ('credit_card', 'stripe'):
                 card_number = form.cleaned_data['card_number'].replace(' ', '').replace('-', '')
                 return process_payment(request, cart, payment_method, card_number, address_id)
+            elif payment_method == 'razorpay':
+                return initiate_razorpay_payment(request, cart, address_id)
             else:
                 return process_order(request, cart, address_id, payment_method)
         else:
@@ -161,6 +168,127 @@ def process_payment(request, cart, payment_method, card_number, address_id):
 
     messages.success(request, f'Order #{order.id} placed successfully! Payment received.')
     return redirect('orders:order_confirmation', order_id=order.id)
+
+
+def initiate_razorpay_payment(request, cart, address_id):
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        messages.error(request, 'Razorpay is not configured. Please try a different payment method.')
+        return redirect('orders:checkout')
+
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    total = cart.total()
+    amount_paise = int(total * 100)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        razorpay_order = client.order.create({
+            'amount': amount_paise,
+            'currency': 'INR',
+            'receipt': f'receipt_{request.user.id}_{int(time.time())}',
+            'payment_capture': '1',
+        })
+    except Exception as e:
+        messages.error(request, f'Payment gateway error: {str(e)}')
+        return redirect('orders:checkout')
+
+    with transaction.atomic():
+        order = Order.objects.create(
+            user=request.user,
+            address=address,
+            total=total,
+            status='pending'
+        )
+
+        for item in cart.items.all():
+            if item.product.inventory < item.quantity:
+                messages.error(request, f'{item.product.title} is out of stock.')
+                return redirect('store:cart_detail')
+
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price,
+                size=item.size.name if item.size else None
+            )
+
+        Payment.objects.create(
+            order=order,
+            amount=total,
+            success=False,
+            payment_method='razorpay',
+            razorpay_order_id=razorpay_order['id'],
+            transaction_id=razorpay_order['id'],
+        )
+
+        cart.active = False
+        cart.save()
+
+    return render(request, 'orders/razorpay_payment.html', {
+        'order': order,
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'razorpay_order_id': razorpay_order['id'],
+        'amount': amount_paise,
+        'currency': 'INR',
+        'order_id': order.id,
+    })
+
+
+@login_required
+def verify_razorpay_payment(request):
+    if request.method != 'POST':
+        return redirect('orders:order_list')
+
+    razorpay_order_id = request.POST.get('razorpay_order_id')
+    razorpay_payment_id = request.POST.get('razorpay_payment_id')
+    razorpay_signature = request.POST.get('razorpay_signature')
+
+    if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+        messages.error(request, 'Invalid payment response.')
+        return redirect('orders:order_list')
+
+    try:
+        payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+    except Payment.DoesNotExist:
+        messages.error(request, 'Payment record not found.')
+        return redirect('orders:order_list')
+
+    params_dict = {
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_payment_id': razorpay_payment_id,
+        'razorpay_signature': razorpay_signature,
+    }
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        client.utility.verify_payment_signature(params_dict)
+        signature_valid = True
+    except razorpay.errors.SignatureVerificationError:
+        signature_valid = False
+
+    if signature_valid:
+        with transaction.atomic():
+            for item in payment.order.items.all():
+                product = item.product
+                if product:
+                    product.inventory -= item.quantity
+                    product.save()
+
+            payment.success = True
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.razorpay_signature = razorpay_signature
+            payment.save()
+
+        messages.success(request, f'Order #{payment.order.id} placed successfully! Payment received via Razorpay.')
+        return redirect('orders:order_confirmation', order_id=payment.order.id)
+    else:
+        payment.success = False
+        payment.razorpay_payment_id = razorpay_payment_id
+        payment.razorpay_signature = razorpay_signature
+        payment.save()
+
+        messages.error(request, 'Payment verification failed. Please contact support.')
+        return redirect('orders:order_detail', order_id=payment.order.id)
 
 
 @login_required

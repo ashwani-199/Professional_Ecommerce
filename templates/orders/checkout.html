@@ -79,6 +79,13 @@
                                 <p class="text-sm text-gray-500">Pay with your PayPal account</p>
                             </div>
                         </label>
+                        <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-primary transition">
+                            <input type="radio" name="payment_method" value="razorpay" class="text-primary" onchange="toggleCardFields()">
+                            <div class="ml-3">
+                                <p class="font-medium text-gray-900">Razorpay</p>
+                                <p class="text-sm text-gray-500">Pay via UPI, Card, Net Banking, Wallet</p>
+                            </div>
+                        </label>
                     </div>
                     
                     <div id="card-fields" class="mt-4 p-4 bg-gray-50 rounded-xl hidden">

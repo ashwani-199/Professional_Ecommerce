@@ -68,6 +68,7 @@ class Payment(models.Model):
         ('credit_card', 'Credit Card'),
         ('paypal', 'PayPal'),
         ('stripe', 'Stripe'),
+        ('razorpay', 'Razorpay'),
     )
     order = models.OneToOneField(Order, related_name="payment", on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -77,6 +78,9 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True, null=True)
     card_last4 = models.CharField(max_length=4, blank=True, null=True)
     card_brand = models.CharField(max_length=20, blank=True, null=True)
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"Payment for Order {self.order.id}"
